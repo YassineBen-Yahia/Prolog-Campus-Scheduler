@@ -44,10 +44,10 @@ choose_assignment(task(Course, _SessionIndex, _Group, Equip, Duration, Enrollmen
     Capacity >= Enrollment.
 
 /*
-If there are 3 slots/day, a duration 2 session can start only at 1 or 2.
+If there are 5 slots/day, a duration 2 session can start up to slot 4.
 */
 fits_in_day(StartSlot, Duration) :-
-    MaxSlot = 3,
+    MaxSlot = 5,
     EndSlot is StartSlot + Duration - 1,
     EndSlot =< MaxSlot.
 
