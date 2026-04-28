@@ -24,6 +24,8 @@ run_one :-
 
 run_all :-
     check_facts_integrity,
+    aggregate_all(count, scheduler:schedule(_, _), Count),
+    format('Total valid schedules found: ~w~n~n', [Count]),
     scheduler:schedule(Schedule, EnergyState),
     write('Feasible schedule found:'), nl,
     utils:print_schedule(Schedule),
