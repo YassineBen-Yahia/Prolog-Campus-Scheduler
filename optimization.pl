@@ -1,6 +1,8 @@
 :- module(optimization, [
     schedule_score/3,
-    best_schedule/3
+    best_schedule/3,
+    load_imbalance/2,
+    room_usage_variance/2
 ]).
 
 :- use_module(facts).

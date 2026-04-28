@@ -36,10 +36,20 @@ run_all.
 run_best :-
     check_facts_integrity,
     statistics(walltime, [_,_]),          % reset the "since last" counter
-    optimization:best_schedule(Schedule, EnergyState, Score),
+    optimization:best_schedule(Schedule, EnergyState, _Score),
     statistics(walltime, [_, ElapsedMs]), % ElapsedMs = time since above call
     write('Best schedule found:'), nl,
     utils:print_schedule(Schedule),
     write('Energy state: '), write(EnergyState), nl,
-    write('Score: '), write(Score), nl,
+    print_score_breakdown(Schedule, EnergyState),
     write('Elapsed ms: '), write(ElapsedMs), nl.
+
+print_score_breakdown(Schedule, EnergyState) :-
+    energy:total_weekly_energy(EnergyState, TotalEnergy),
+    optimization:load_imbalance(EnergyState, Imbalance),
+    optimization:room_usage_variance(Schedule, Variance),
+    Score is TotalEnergy + Imbalance + Variance,
+    format('  Total Energy   : ~2f~n', [TotalEnergy]),
+    format('  Load Imbalance : ~2f~n', [Imbalance]),
+    format('  Room Variance  : ~2f~n', [Variance]),
+    format('  TOTAL SCORE    : ~2f~n', [Score]).
