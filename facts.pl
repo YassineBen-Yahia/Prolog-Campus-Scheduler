@@ -4,6 +4,7 @@
     room/5,
     building/2,
     slot/2,
+    max_slot_index/1,
     equipment_type/1,
     all_days/1
 ]).
@@ -54,6 +55,12 @@ slot(tue, 1). slot(tue, 2). slot(tue, 3). slot(tue, 4). slot(tue, 5).
 slot(wed, 1). slot(wed, 2). slot(wed, 3). slot(wed, 4). slot(wed, 5).
 slot(thu, 1). slot(thu, 2). slot(thu, 3). slot(thu, 4). slot(thu, 5).
 slot(fri, 1). slot(fri, 2). slot(fri, 3). slot(fri, 4). slot(fri, 5).
+
+/* 
+Define the maximum slot index available logically per day 
+Used to restrict duration boundaries without hardcoding numbers!
+*/
+max_slot_index(5).
 
 equipment_type(board).
 equipment_type(projector).

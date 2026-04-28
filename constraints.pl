@@ -40,7 +40,7 @@ room_free(Room, Day, Start, Dur, [assign(_Course,_S,Room2,Day2,Start2,Dur2)|Rest
 
 group_free(_Group, _Day, _Start, _Dur, []).
 group_free(Group, Day, Start, Dur, [assign(Course2,_S,_Room2,Day2,Start2,Dur2)|Rest]) :-
-    facts:course(Course2, Group2, _Equip2, _SPW2, Dur2, _E2),
+    facts:course(Course2, Group2, _Equip2, _SPW2, _Dur2Facts, _E2),
     \+ (
         Group = Group2,
         Day = Day2,
@@ -48,6 +48,12 @@ group_free(Group, Day, Start, Dur, [assign(Course2,_S,_Room2,Day2,Start2,Dur2)|R
     ),
     group_free(Group, Day, Start, Dur, Rest).
 
+/*
+Safety Warning:
+If a course has N sessions per week, it MUST be available on at least N distinct days 
+for this constraint to be satisfiable. Otherwise, finding a completely valid schedule 
+will quietly fail!
+*/
 course_spread_ok(_Course, _Day, []).
 course_spread_ok(Course, Day, [assign(Course2,_S,_Room2,Day2,_Start2,_Dur2)|Rest]) :-
     \+ (

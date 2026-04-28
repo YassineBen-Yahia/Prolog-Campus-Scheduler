@@ -20,9 +20,9 @@ run_all :-
 run_all.
 
 run_best :-
-    statistics(walltime, [_Start|_]),
+    statistics(walltime, [_,_]),          % reset the "since last" counter
     optimization:best_schedule(Schedule, EnergyState, Score),
-    statistics(walltime, [_End, ElapsedMs]),
+    statistics(walltime, [_, ElapsedMs]), % ElapsedMs = time since above call
     write('Best schedule found:'), nl,
     utils:print_schedule(Schedule),
     write('Energy state: '), write(EnergyState), nl,
