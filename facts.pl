@@ -29,6 +29,8 @@ availability(databases, [slot(mon,2), slot(mon,4), slot(tue,3), slot(wed,2), slo
 
 /*
 room(Room, Capacity, Equipment, Building, EnergyPerSlot).
+Note: EnergyPerSlot is the energy consumed per scheduling slot, not per hour or per session.
+Total session energy = EnergyPerSlot * Duration in slots.
 */
 room(r101, 20, board,     b1, 3).
 room(r102, 30, projector, b1, 5).

@@ -3,7 +3,8 @@
     energy_ok/4,
     add_energy/5,
     total_weekly_energy/2,
-    daily_building_energy/4
+    daily_building_energy/4,
+    building_daily_margin/4
 ]).
 
 :- use_module(facts).
@@ -49,3 +50,12 @@ total_weekly_energy([usage(_B,_D,E)|Rest], Total) :-
 
 daily_building_energy(Building, Day, EnergyState, Energy) :-
     current_energy(Building, Day, EnergyState, Energy).
+
+/*
+Calculates how much energy a building has left on a specific day before hitting its maximum limit.
+Useful for optimization scoring (e.g., maximizing the remaining daily margin across the week).
+*/
+building_daily_margin(Building, Day, EnergyState, Margin) :-
+    facts:building(Building, MaxDailyEnergy),
+    current_energy(Building, Day, EnergyState, Current),
+    Margin is MaxDailyEnergy - Current.

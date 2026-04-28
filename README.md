@@ -308,6 +308,10 @@ rooms by equipment and capacity before running the full constraint checks.
 - **Removed Redundant Checks**: Removed the `capacity_ok` and `equipment_ok` logic checks out of `valid_assignment` within `constraints.pl`. Since `choose_assignment` in the scheduler already pre-filters assignments using these identical constraints before applying them, running them again in `valid_assignment` was wasted operation overhead.
 - **Duration Consistency Binding in `group_free`**: Modified the `group_free` check to correctly bind the parameter `Dur2` to `facts:course(Course2, Group2, _Equip2, _SPW2, Dur2, _E2)`. Previously, the duration of an existing assigned task fetched from the static fact base was ignored, leaving a silent fragility where an incorrect assigned duration wasn't validated against the true course base.
 
+### Energy Tracker Fixes
+- **Duration Documentation Added**: Added a key clarification to `facts.pl` explicitly stating that `EnergyPerSlot` is indeed per logical timeslot, not per hour or session, which clarifies exactly why mathematical calculations in the tracker (e.g. `AddedEnergy is EnergyPerSlot * Duration`) behave the way they do! This removes ambiguity preventing disputes or misunderstanding in defenses.
+- **New Optimization Targeting Module `building_daily_margin/4`**: Included a new predicate inside `energy.pl` (`building_daily_margin/4`). This computes how much energy a specific building has left on a specific day before hitting its limit (`MaxDailyEnergy - CurrentEnergy`). This fixes the missing ability to identify which buildings are close to exceeding their threshold, which sets up load-balancing systems correctly for Milestone 3 optimization features!
+
 ## Important Note About `run_all`
 
 `run_all` is now stack-safe because it prints schedules as they are found instead
