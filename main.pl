@@ -40,9 +40,30 @@ run_best :-
     statistics(walltime, [_, ElapsedMs]), % ElapsedMs = time since above call
     write('Best schedule found:'), nl,
     utils:print_schedule(Schedule),
-    write('Energy state: '), write(EnergyState), nl,
     print_score_breakdown(Schedule, EnergyState),
+    print_energy_report(EnergyState),
     write('Elapsed ms: '), write(ElapsedMs), nl.
+
+print_energy_report(EnergyState) :-
+    facts:all_days(Days),
+    findall(B, facts:building(B, _), Buildings),
+    format('~n=== Energy Report ===~n'),
+    forall(
+        member(Building, Buildings),
+        (
+            facts:building(Building, Max),
+            format('Building ~w (max ~w/day):~n', [Building, Max]),
+            forall(
+                member(Day, Days),
+                (
+                    energy:daily_building_energy(Building, Day, EnergyState, Used),
+                    Margin is Max - Used,
+                    format('  ~w: used=~w, margin=~w~n', [Day, Used, Margin])
+                )
+            )
+        )
+    ),
+    nl.
 
 print_score_breakdown(Schedule, EnergyState) :-
     energy:total_weekly_energy(EnergyState, TotalEnergy),
