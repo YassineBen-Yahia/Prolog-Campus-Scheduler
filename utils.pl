@@ -21,6 +21,10 @@ session_tasks(Tasks) :-
         Tasks
     ).
 
+/*
+member_slot uses memberchk to efficiently test membership.
+This prevents Prolog from backtracking and generating duplicate solutions if a slot happens to be listed multiple times.
+*/
 member_slot(Slot, Slots) :-
     memberchk(Slot, Slots).
 
@@ -42,5 +46,6 @@ assign(Course, SessionIndex, Room, Day, StartSlot, Duration)
 */
 print_schedule([]).
 print_schedule([assign(Course,S,Room,Day,Start,Dur)|Rest]) :-
-    write(assign(Course,S,Room,Day,Start,Dur)), nl,
+    End is Start + Dur - 1,
+    format('Course: ~w | Session: ~w | Room: ~w | Day: ~w | Slot: ~w-~w~n', [Course, S, Room, Day, Start, End]),
     print_schedule(Rest).

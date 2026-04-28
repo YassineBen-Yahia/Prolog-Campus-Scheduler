@@ -45,9 +45,6 @@ energy limits.
 
 - `valid_assignment/6` is the main constraint checker for one proposed session
   assignment.
-- `capacity_ok/2` checks that the selected room can hold the course enrollment.
-- `equipment_ok/2` checks that the room equipment exactly matches the course
-  requirement.
 - `teacher_available/3` checks whether the course is allowed at the selected
   day and start slot. In this project, course availability acts like teacher
   availability.
@@ -297,6 +294,19 @@ keeps only the current best candidate, so memory use stays small.
 
 The scheduler also now tries the most constrained sessions first and filters
 rooms by equipment and capacity before running the full constraint checks.
+
+### Domain Constraints Fixes
+
+- **Expanded Daily Timeslots**: Increased the available slots per day from 3 to 5 (`slot(day, 1)` to `slot(day, 5)`), and adjusted the `fits_in_day` boundary logic so that duration 2 sessions have much more flexibility to be scheduled without getting blocked. Added more slot availability to courses to utilize these new slots.
+- **Rebalanced Energy Limits**: Adjusted building energy constraints to prevent immediate scheduling failures on overlapping sessions. The maximum daily energy for buildings was increased (`b1`: 40, `b2`: 45, `b3`: 35), and the energy consumption per slot for high-intensity lab rooms (`lab1`, `lab2`) was reduced to provide a solvable problem space while maintaining constrained optimization.
+
+### Utilities Fixes
+- **Improved Output Formatting**: Enhanced `print_schedule/1` to display user-friendly output rather than raw Prolog terms. It now prints cleanly formatted lines like `Course: ai | Session: 1 | Room: lab1 | Day: mon | Slot: 1-2`, calculating Start-End slots for a more professional execution result.
+- **Backtracking Efficiency**: Documented `member_slot/2` in `utils.pl` explaining the use of `memberchk/2` which efficiently tests slot membership without leaving choice points that could cause duplicate branches in search space on backtracking.
+
+### Constraints Fixes
+- **Removed Redundant Checks**: Removed the `capacity_ok` and `equipment_ok` logic checks out of `valid_assignment` within `constraints.pl`. Since `choose_assignment` in the scheduler already pre-filters assignments using these identical constraints before applying them, running them again in `valid_assignment` was wasted operation overhead.
+- **Duration Consistency Binding in `group_free`**: Modified the `group_free` check to correctly bind the parameter `Dur2` to `facts:course(Course2, Group2, _Equip2, _SPW2, Dur2, _E2)`. Previously, the duration of an existing assigned task fetched from the static fact base was ignored, leaving a silent fragility where an incorrect assigned duration wasn't validated against the true course base.
 
 ## Important Note About `run_all`
 

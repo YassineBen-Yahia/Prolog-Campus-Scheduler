@@ -12,27 +12,17 @@ valid_assignment(+Task, +Room, +Day, +StartSlot, +PartialSchedule, +EnergyState)
 Task = task(Course, SessionIndex, Group, Equip, Duration, Enrollment)
 */
 valid_assignment(
-    task(Course, _SessionIndex, Group, Equip, Duration, Enrollment),
+    task(Course, _SessionIndex, Group, _Equip, Duration, _Enrollment),
     Room,
     Day,
     StartSlot,
     PartialSchedule,
     EnergyState
 ) :-
-    capacity_ok(Enrollment, Room),
-    equipment_ok(Equip, Room),
     teacher_available(Course, Day, StartSlot),
     room_free(Room, Day, StartSlot, Duration, PartialSchedule),
     group_free(Group, Day, StartSlot, Duration, PartialSchedule),
     energy:energy_ok(Room, Day, Duration, EnergyState).
-
-capacity_ok(Enrollment, Room) :-
-    facts:room(Room, Capacity, _Equip, _Building, _Energy),
-    Capacity >= Enrollment.
-
-equipment_ok(RequiredEquip, Room) :-
-    facts:room(Room, _Capacity, RoomEquip, _Building, _Energy),
-    RoomEquip = RequiredEquip.
 
 teacher_available(Course, Day, StartSlot) :-
     facts:availability(Course, Slots),
@@ -49,7 +39,7 @@ room_free(Room, Day, Start, Dur, [assign(_Course,_S,Room2,Day2,Start2,Dur2)|Rest
 
 group_free(_Group, _Day, _Start, _Dur, []).
 group_free(Group, Day, Start, Dur, [assign(Course2,_S,_Room2,Day2,Start2,Dur2)|Rest]) :-
-    facts:course(Course2, Group2, _Equip2, _SPW2, _D2, _E2),
+    facts:course(Course2, Group2, _Equip2, _SPW2, Dur2, _E2),
     \+ (
         Group = Group2,
         Day = Day2,
