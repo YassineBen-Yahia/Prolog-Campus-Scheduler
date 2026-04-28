@@ -22,6 +22,7 @@ valid_assignment(
     teacher_available(Course, Day, StartSlot),
     room_free(Room, Day, StartSlot, Duration, PartialSchedule),
     group_free(Group, Day, StartSlot, Duration, PartialSchedule),
+    course_spread_ok(Course, Day, PartialSchedule),
     energy:energy_ok(Room, Day, Duration, EnergyState).
 
 teacher_available(Course, Day, StartSlot) :-
@@ -46,3 +47,11 @@ group_free(Group, Day, Start, Dur, [assign(Course2,_S,_Room2,Day2,Start2,Dur2)|R
         utils:overlaps(Start, Dur, Start2, Dur2)
     ),
     group_free(Group, Day, Start, Dur, Rest).
+
+course_spread_ok(_Course, _Day, []).
+course_spread_ok(Course, Day, [assign(Course2,_S,_Room2,Day2,_Start2,_Dur2)|Rest]) :-
+    \+ (
+        Course = Course2,
+        Day = Day2
+    ),
+    course_spread_ok(Course, Day, Rest).

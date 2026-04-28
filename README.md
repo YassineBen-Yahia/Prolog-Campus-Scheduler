@@ -52,6 +52,8 @@ energy limits.
   in the partial schedule.
 - `group_free/5` checks that the student group has no overlapping session
   already placed in the partial schedule.
+- `course_spread_ok/3` ensures multiple sessions of exactly the same course are
+  scheduled on different days.
 
 ### `energy.pl`
 
@@ -233,6 +235,7 @@ An assignment is valid only if:
 - the course is available at that slot;
 - the room is not already used at an overlapping time;
 - the group does not already have another overlapping session;
+- the sessions of the same course are spread across different days;
 - the building does not exceed its daily energy limit.
 
 Time overlap is checked by converting each start slot and duration into an
@@ -307,6 +310,11 @@ rooms by equipment and capacity before running the full constraint checks.
 ### Constraints Fixes
 - **Removed Redundant Checks**: Removed the `capacity_ok` and `equipment_ok` logic checks out of `valid_assignment` within `constraints.pl`. Since `choose_assignment` in the scheduler already pre-filters assignments using these identical constraints before applying them, running them again in `valid_assignment` was wasted operation overhead.
 - **Duration Consistency Binding in `group_free`**: Modified the `group_free` check to correctly bind the parameter `Dur2` to `facts:course(Course2, Group2, _Equip2, _SPW2, Dur2, _E2)`. Previously, the duration of an existing assigned task fetched from the static fact base was ignored, leaving a silent fragility where an incorrect assigned duration wasn't validated against the true course base.
+- **Session Spread Enforcement**: Added a new foundational `course_spread_ok` constraint. In prior versions, multiple sessions of the exact same course could be assigned back-to-back or spaced across the exact same day. This now enforces daily separation (two sessions of AI must be on strictly different days)!
+
+### Scheduler Fixes
+- **Removed Redundant Database Traversal**: Removed the lookup `facts:slot(Day, StartSlot)` inside `choose_assignment` within `scheduler.pl`. Calling `member` directly against the valid `AllowedSlots` already correctly generated available slot bounds without firing redundant truth-choice clauses at the raw fact set layer.
+- **Static vs Dynamic MRV Constraints (Documentation Add)**: The scheduler inherently processes tasks efficiently via Minimum Remaining Values (MRV) evaluation (`order_tasks/2`). However, be aware this implements a **Static Ordering**: it judges difficulty uniformly before assigning variables. In an enterprise system, as constraints tighten, an actively shrinking branch matrix requires **Dynamic Re-ordering** re-evaluating each level. Prolog's declarative state tracking complicates this natively without explicit re-entry wrapping, but it denotes the primary limitation going forward.
 
 ### Energy Tracker Fixes
 - **Duration Documentation Added**: Added a key clarification to `facts.pl` explicitly stating that `EnergyPerSlot` is indeed per logical timeslot, not per hour or session, which clarifies exactly why mathematical calculations in the tracker (e.g. `AddedEnergy is EnergyPerSlot * Duration`) behave the way they do! This removes ambiguity preventing disputes or misunderstanding in defenses.

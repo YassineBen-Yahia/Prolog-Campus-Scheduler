@@ -38,7 +38,6 @@ Possible assignments are generated from facts.
 choose_assignment(task(Course, _SessionIndex, _Group, Equip, Duration, Enrollment), Room, Day, StartSlot) :-
     facts:availability(Course, AllowedSlots),
     member(slot(Day, StartSlot), AllowedSlots),
-    facts:slot(Day, StartSlot),
     fits_in_day(StartSlot, Duration),
     facts:room(Room, Capacity, Equip, _Building, _Energy),
     Capacity >= Enrollment.
