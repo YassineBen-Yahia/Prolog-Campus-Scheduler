@@ -84,6 +84,7 @@ energy limits.
 - `generate_all_schedules/1` collects all schedules into a list. This is kept
   for experimentation, but `run_all/0` is safer because it streams schedules.
 
+
 ### `optimization.pl`
 
 - `schedule_score/3` computes the score for a complete schedule. Lower is
